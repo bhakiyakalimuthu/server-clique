@@ -3,10 +3,10 @@ package types
 type Action string
 
 const (
-	AddItem    Action = "AddItem"
-	RemoveItem Action = "RemoveItem"
-	GetItem    Action = "GetItem"
-	GetAll     Action = "GetAll"
+	AddItem    Action = "add"
+	RemoveItem Action = "remove"
+	GetItem    Action = "get"
+	GetAll     Action = "getall"
 )
 
 func (a Action) String() string {
@@ -14,7 +14,7 @@ func (a Action) String() string {
 }
 
 type Message struct {
-	Action Action
-	Key    string
-	Value  string
+	Action Action `json:"action"`
+	Key    string `json:"key"`
+	Value  string `json:"value"`
 }

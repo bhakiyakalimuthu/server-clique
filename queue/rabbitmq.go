@@ -24,7 +24,7 @@ type queue struct {
 	appID     string
 }
 
-func NewQueue(connStr, queueName, appID string) (*queue, error) {
+func New(connStr, queueName, appID string) (*queue, error) {
 	conn, err := amqp.Dial(connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial %v", err)
@@ -66,6 +66,7 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 	}
 	msgChan := make(chan *types.Message)
 	go func() {
+		defer close(msgChan)
 		for {
 			select {
 			case msg := <-deliveryChan:
@@ -74,9 +75,15 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 					q.logger.Error("failed to unmarshal message body", zap.Error(err))
 					continue
 				}
+				select {
+				// make sure that none of the msg get into msgChan  after context gets cancelled
+				case <-ctx.Done():
+					return
+				default:
+				}
 				msgChan <- m
 			case <-ctx.Done():
-				close(msgChan)
+				return
 			}
 		}
 	}()

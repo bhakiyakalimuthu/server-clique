@@ -11,8 +11,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const fileName = "./server_info.log"
-
 type Server struct {
 	logger *zap.Logger
 	queue  queue.Queue
@@ -21,8 +19,8 @@ type Server struct {
 	cChan  chan *types.Message
 }
 
-func NewServer(logger *zap.Logger, queue queue.Queue, store Store, fileName string) (*Server, error) {
-	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
+func New(logger *zap.Logger, queue queue.Queue, store Store, fileName string, cChan chan *types.Message) (*Server, error) {
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o664)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +29,7 @@ func NewServer(logger *zap.Logger, queue queue.Queue, store Store, fileName stri
 		queue:  queue,
 		store:  store,
 		file:   file,
+		cChan:  cChan,
 	}, nil
 }
 
@@ -40,13 +39,20 @@ func (s *Server) Start(ctx context.Context) error {
 		s.logger.Error("failed to consume message", zap.Error(err))
 		return err
 	}
+	defer func() {
+		close(s.cChan)
+		s.file.Close()
+	}()
 	for {
 		select {
 		case msg := <-pChan:
+			select {
+			case <-ctx.Done():
+				return nil
+			default:
+			}
 			s.cChan <- msg
 		case <-ctx.Done():
-			close(s.cChan)
-			s.file.Close()
 			return nil
 		}
 	}
@@ -59,23 +65,25 @@ func (s *Server) Process(ctx context.Context, wg *sync.WaitGroup) {
 		switch msg.Action {
 		case types.AddItem:
 			s.store.Add(ctx, msg.Key, msg.Value)
-			str = fmt.Sprintf("performed action:%s key:%s value:%s", msg.Action.String(), msg.Key, msg.Value)
+			str = fmt.Sprintf("performed action:%s key:%s value:%s\n", msg.Action.String(), msg.Key, msg.Value)
 		case types.RemoveItem:
 			if ok := s.store.Remove(ctx, msg.Key); !ok {
 				s.logger.Error("key not found", zap.String("action", msg.Action.String()), zap.String("key", msg.Key))
 				continue
 			}
-			str = fmt.Sprintf("performed action:%s key:%s", msg.Action.String(), msg.Key)
+			str = fmt.Sprintf("performed action:%s key:%s\n", msg.Action.String(), msg.Key)
 		case types.GetItem:
 			val, ok := s.store.Get(ctx, msg.Key)
 			if !ok {
 				s.logger.Error("key not found", zap.String("action", msg.Action.String()), zap.String("key", msg.Key))
 				continue
 			}
-			str = fmt.Sprintf("performed action:%s key:%s value:%s", msg.Action.String(), msg.Key, val)
+			str = fmt.Sprintf("performed action:%s key:%s value:%s\n", msg.Action.String(), msg.Key, val)
 		case types.GetAll:
 			lists := s.store.GetAll(ctx)
-			str = fmt.Sprintf("performed action:%s items:%v itemsLength:%d", msg.Action.String(), lists, len(lists))
+			str = fmt.Sprintf("performed action:%s items:%v itemsLength:%d\n", msg.Action.String(), lists, len(lists))
+		default:
+			s.logger.Error("unknown action", zap.String("action", msg.Action.String()))
 		}
 		fmt.Fprint(s.file, str)
 	}
