@@ -85,6 +85,6 @@ func (s *Server) Process(ctx context.Context, wg *sync.WaitGroup) {
 		default:
 			s.logger.Error("unknown action", zap.String("action", msg.Action.String()))
 		}
-		fmt.Fprint(s.file, str)
+		fmt.Fprint(s.file, []byte(str))
 	}
 }
