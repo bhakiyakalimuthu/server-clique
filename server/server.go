@@ -61,6 +61,10 @@ func (s *Server) Start(ctx context.Context) error {
 func (s *Server) Process(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for msg := range s.cChan {
+		if msg == nil {
+			// handle edge case, when the connection is closed nil might get passed
+			return
+		}
 		var str string
 		switch msg.Action {
 		case types.AddItem:

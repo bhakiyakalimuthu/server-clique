@@ -30,6 +30,7 @@ func (c *Client) Start(ctx context.Context) error {
 	if err := json.Unmarshal(inputBytes, &items); err != nil {
 		return err
 	}
+	defer c.queue.Close()
 	for _, msg := range items {
 		select {
 		case <-ctx.Done():
@@ -42,5 +43,6 @@ func (c *Client) Start(ctx context.Context) error {
 			}
 		}
 	}
+
 	return nil
 }

@@ -24,7 +24,7 @@ type queue struct {
 	appID     string
 }
 
-func New(connStr, queueName, appID string) (*queue, error) {
+func New(logger *zap.Logger, connStr, queueName, appID string) (*queue, error) {
 	conn, err := amqp.Dial(connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial %v", err)
@@ -38,6 +38,7 @@ func New(connStr, queueName, appID string) (*queue, error) {
 		return nil, fmt.Errorf("failed to declare a queue: %v", err)
 	}
 	return &queue{
+		logger:    logger,
 		conn:      conn,
 		ch:        ch,
 		queueName: queueName,
@@ -59,6 +60,11 @@ func (q *queue) Publish(message *types.Message) error {
 	})
 }
 
+func (q *queue) Close() error {
+	// gracefully close the connection
+	return q.conn.Close()
+}
+
 func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 	deliveryChan, err := q.ch.Consume(q.queueName, "", true, false, false, false, nil)
 	if err != nil {
@@ -69,10 +75,16 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 		defer close(msgChan)
 		for {
 			select {
-			case msg := <-deliveryChan:
+			case msg, ok := <-deliveryChan:
+				// do not proceed if connection closed
+				// alternatively ch.NotifyClose can be used
+				if !ok {
+					q.logger.Warn("rabbit mq connection closed")
+					return
+				}
 				m := new(types.Message)
 				if err := json.Unmarshal(msg.Body, &m); err != nil {
-					q.logger.Error("failed to unmarshal message body", zap.Error(err))
+					q.logger.Error("failed to unmarshal message body", zap.Error(err), zap.Any("msg", msg))
 					continue
 				}
 				select {
@@ -81,7 +93,7 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 					return
 				default:
 				}
-				msgChan <- m
+				msgChan <- m // send in messages
 			case <-ctx.Done():
 				return
 			}

@@ -21,7 +21,7 @@ var (
 func main() {
 	l := newLogger(buildVersion, appName)
 	cfg := config.NewConfig()
-	q, err := queue.New(cfg.QueueConnString, cfg.QueueName, appName)
+	q, err := queue.New(l, cfg.QueueConnString, cfg.QueueName, appName)
 	if err != nil {
 		l.Fatal("failed to create new queue", zap.Error(err))
 	}

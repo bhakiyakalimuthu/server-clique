@@ -9,4 +9,5 @@ import (
 type Queue interface {
 	Publish(*types.Message) error
 	Consume(context.Context) (<-chan *types.Message, error)
+	Close() error
 }
