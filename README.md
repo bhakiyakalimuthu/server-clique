@@ -48,6 +48,7 @@
 
 > **Note:**
 > Make sure you have docker installed or Download and install rabbitmq installer
+> amd64(debian) and arm64(osx) has different docker run commands
 
 ## I.Start via main file
 ### Step:1 start rabbitmq
@@ -72,10 +73,10 @@ Run these commands in terminal shell
 ### Step:1
      make docker-run-rabbitmq
 ### Step:2
-    make docker-image-server
+    make docker-image-server / make osx-docker-image-server 
     make docker-run-server
 ### Step:3
-    make docker-image-client
+    make docker-image-client / make osx-docker-image-client
     make docker-run-client
 
 # Testing
