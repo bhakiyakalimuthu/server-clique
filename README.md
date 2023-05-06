@@ -1,10 +1,9 @@
-### SERVER-CLIQUE (server-client-queue)
->* This repo containing code for a server and client that communicate via message queue.
->* Rabbit mq is used as message queue.
->* Client request server to AddItem(key, value), RemoveItem(key), GetItem(key), GetAllItems()
-     via rabbitmq
->* Server has data structure that holds the data in the memory while keeping the order of items as they added.
->* Server reads the request events(client request) from rabbitmq and act accordingly.
+### ***SERVER-CLIQUE (server-client-queue)***
+* This repo containing code for a server and client that communicate via message queue.
+* Rabbit mq is used as message queue.
+* Client request server to AddItem(key, value), RemoveItem(key), GetItem(key), GetAllItems() via rabbitmq
+* Server has data structure that holds the data in the memory while keeping the order of items as they added.
+* Server reads the request events(client request) from rabbitmq and act accordingly.
 
 # Prerequisites
 - Go 1.19
