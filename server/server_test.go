@@ -28,8 +28,8 @@ func TestServer_Process(t *testing.T) {
 		t.Fatal("failed to start server", zap.Error(err))
 	}
 
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		server.Process(ctx, wg)
 	}()
 
