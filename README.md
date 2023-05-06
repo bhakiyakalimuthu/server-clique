@@ -92,6 +92,7 @@ Run these commands in terminal shell
 
 >* Script to fire up messages from client.
 >* This simple shell script starts client in loop and messages are feed from input.json
+>* Multiple client simulation: Same script can be run as multiple client instance to increase the load 
 
 # Memory store benchmark
 * There are 2 memory store implementation available. 
