@@ -6,7 +6,7 @@
 >* Server has data structure that holds the data in the memory while keeping the order of items as they added.
 >* Server reads the request events(client request) from rabbitmq and act accordingly.
 
-# Pre requisites
+# Prerequisites
 - Go 1.19
 - Ubuntu 20.04 (any linux based distros) / OSX
 
