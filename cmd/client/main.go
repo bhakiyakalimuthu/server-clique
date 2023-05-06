@@ -32,7 +32,7 @@ func main() {
 		signal.Notify(shutdown, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 		<-shutdown
 		l.Warn("Shutting down client")
-		cancel()
+		cancel() // cancel the context
 	}()
 	if err := client.Start(ctx); err != nil {
 		l.Fatal("failed to start client", zap.Error(err))

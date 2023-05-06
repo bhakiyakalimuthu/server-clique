@@ -17,5 +17,6 @@ ARG APP_NAME
 WORKDIR /app
 COPY --from=builder /build/${APP_NAME} /app/${APP_NAME}
 RUN chmod +x /app/${APP_NAME}
+EXPOSE 8080
 ENV APP=/app/${APP_NAME}
 CMD $APP

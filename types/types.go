@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 type Action string
 
 const (
@@ -14,7 +16,8 @@ func (a Action) String() string {
 }
 
 type Message struct {
-	Action Action `json:"action"`
-	Key    string `json:"key"`
-	Value  string `json:"value"`
+	Action    Action    `json:"action"`
+	Key       string    `json:"key"`
+	Value     string    `json:"value"`
+	Timestamp time.Time `json:"timestamp"`
 }

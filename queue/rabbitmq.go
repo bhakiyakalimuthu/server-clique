@@ -12,10 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-//const (
-//	queueName = "clique"
-//)
-
 type queue struct {
 	logger    *zap.Logger
 	conn      *amqp.Connection
@@ -29,6 +25,7 @@ func New(logger *zap.Logger, connStr, queueName, appID string) (*queue, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial %v", err)
 	}
+
 	ch, err := conn.Channel()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create channel %v", err)
@@ -47,6 +44,7 @@ func New(logger *zap.Logger, connStr, queueName, appID string) (*queue, error) {
 }
 
 func (q *queue) Publish(message *types.Message) error {
+	message.Timestamp = time.Now()
 	body, err := json.Marshal(message)
 	if err != nil {
 		return err
@@ -78,8 +76,11 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 			case msg, ok := <-deliveryChan:
 				// do not proceed if connection closed
 				// alternatively ch.NotifyClose can be used
+				// retry logic is not implemented
 				if !ok {
 					q.logger.Warn("rabbit mq connection closed")
+					// Instead of returning here, os.Exit might be an option as
+					// server will be waiting for termination signal and also no way to reconnect the connection
 					return
 				}
 				m := new(types.Message)

@@ -37,7 +37,7 @@ osx-docker-image-server:
 	DOCKER_BUILDKIT=1 docker build --platform linux/arm64  --progress=plain  --build-arg APP_NAME=${APP_NAME}-server --build-arg VERSION=${VERSION} -f dockerfiles/server/Dockerfile . -t ${APP_NAME}-server-${VERSION}:latest
 
 docker-run-server:
-	docker run --env-file=.env.example -p 9090:9090 ${APP_NAME}-server-${VERSION}
+	docker run --network=host  ${APP_NAME}-server-${VERSION}
 
 docker-image-client:
 	DOCKER_BUILDKIT=1 docker build --platform linux/amd64 --progress=plain  --build-arg VERSION=${VERSION} -f dockerfiles/client/Dockerfile . -t ${APP_NAME}-client-${VERSION}:${VERSION}
@@ -46,7 +46,10 @@ osx-docker-image-client:
 	DOCKER_BUILDKIT=1 docker build --platform linux/arm64  --progress=plain  --build-arg APP_NAME=${APP_NAME}-client --build-arg VERSION=${VERSION} -f dockerfiles/client/Dockerfile . -t ${APP_NAME}-client-${VERSION}:latest
 
 docker-run-client:
-	docker run  --env-file=.env.example  ${APP_NAME}-client-${VERSION}
+	docker run  --network=host  ${APP_NAME}-client-${VERSION}
+
+docker-run-rabbitmq:
+	docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 
 up:
 	docker-compose up -d

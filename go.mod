@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
+	github.com/go-playground/assert/v2 v2.2.0
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/google/uuid v1.3.0
 	github.com/streadway/amqp v1.0.0
