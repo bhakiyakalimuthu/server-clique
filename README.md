@@ -59,7 +59,7 @@
     go run -race cmd/server/main.go OR go run -race cmd/server/mem_optimised/main.go
 
 ### Step:3 start client
-    go run -race cmd/clien/main.go
+    go run -race cmd/client/main.go
 
 ## II.Start via locally build binary
 Run these commands in terminal shell
