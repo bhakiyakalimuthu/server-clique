@@ -30,7 +30,7 @@ func TestServer_Process(t *testing.T) {
 
 	wg.Add(1)
 	go func() {
-		server.Process(ctx, wg)
+		server.Process(ctx, wg, 1)
 	}()
 
 	t1 := time.Now()
@@ -77,7 +77,7 @@ func BenchmarkServer_Memstore(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		wg.Add(1)
-		go server.Process(ctx, &wg)
+		go server.Process(ctx, &wg, i)
 	}
 	msg := genMessage()
 	// Simulate sending messages to the server
@@ -106,7 +106,7 @@ func BenchmarkServer_MemstoreOptimised(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		wg.Add(1)
-		go server.Process(ctx, &wg)
+		go server.Process(ctx, &wg, i)
 	}
 	msg := genMessage()
 	// Simulate sending messages to the server

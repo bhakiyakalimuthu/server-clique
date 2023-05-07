@@ -66,14 +66,14 @@ func main() {
 	}()
 
 	// start worker and add worker pool
-	for i := 0; i < workerPoolSize; i++ {
-		go server.Process(ctx, wg)
+	for i := 1; i <= workerPoolSize; i++ {
+		go server.Process(ctx, wg, i)
 	}
 
 	signal.Notify(shutdown, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	// handle shut down
 	<-shutdown
-	l.Warn("Shutting down server")
+	l.Warn("shutting down server!!!")
 
 	fileServer.Stop() // stop the file server
 	cancel()          // cancel the context

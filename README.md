@@ -109,7 +109,18 @@ PASS
 ok      github.com/bhakiyakalimuthu/server-clique/server        7.730s
 
 ```
-
+# Sample output
+```
+2023/05/07 08:46:40.819582 worker id:4 performed action:add key:A value:a
+2023/05/07 08:46:40.819731 worker id:1 performed action:add key:B value:b
+2023/05/07 08:46:40.819747 worker id:5 performed action:add key:C value:c
+2023/05/07 08:46:40.819822 worker id:3 performed action:get key:A value:a
+2023/05/07 08:46:40.819871 worker id:2 performed action:remove key:B
+2023/05/07 08:46:40.819915 worker id:1 performed action:add key:B value:b
+2023/05/07 08:46:40.819969 worker id:4 performed action:getall items:[{A a 1683449200812541000} {B b 1683449200812859000} {C c 1683449200812920000}] itemsLength:3
+2023/05/07 08:46:40.820010 worker id:5 performed action:add key:D value:d
+2023/05/07 08:46:40.820164 worker id:3 performed action:add key:E value:e
+```
 > ***Improvements***
 >* Retry if rabbitmq abruptly close the connection
 >* Quit server if rabbit mq connection is closed as there is no retry logic 
