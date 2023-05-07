@@ -1,4 +1,4 @@
-all: clean build test test-race lint gofumpt docker-image docker-run
+all: clean build test test-race lint gofumpt docker-run-rabbitmq docker-image-server docker-run-server docker-image-client docker-run-client
 APP_NAME := server-clique
 
 GOPATH := $(if $(GOPATH),$(GOPATH),~/go)
