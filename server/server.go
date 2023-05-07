@@ -69,28 +69,33 @@ func (s *Server) Process(ctx context.Context, wg *sync.WaitGroup, workerID int) 
 			s.logger.Debug("received nil msg value")
 			return
 		}
+		var val string
+		var ok, isUnknown bool
 		switch msg.Action {
 		case types.AddItem:
 			s.store.Add(ctx, msg.Key, msg.Value, msg.Timestamp)
-			log.Printf("worker id:%d performed action:%s key:%s value:%s\n", workerID, msg.Action.String(), msg.Key, msg.Value)
 		case types.RemoveItem:
-			if ok := s.store.Remove(ctx, msg.Key); !ok {
-				s.logger.Error("key not found", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()), zap.String("key", msg.Key))
-				continue
-			}
-			log.Printf("worker id:%d performed action:%s key:%s\n", workerID, msg.Action.String(), msg.Key)
+			ok = s.store.Remove(ctx, msg.Key)
 		case types.GetItem:
-			val, ok := s.store.Get(ctx, msg.Key)
-			if !ok {
-				s.logger.Error("key not found", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()), zap.String("key", msg.Key))
-				continue
-			}
-			log.Printf("worker id:%d performed action:%s key:%s value:%s\n", workerID, msg.Action.String(), msg.Key, val)
+			val, ok = s.store.Get(ctx, msg.Key)
 		case types.GetAll:
 			lists := s.store.GetAll(ctx)
+			ok = true
 			log.Printf("worker id:%d performed action:%s items:%v itemsLength:%d\n", workerID, msg.Action.String(), lists, len(lists))
 		default:
-			s.logger.Error("unknown action", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()))
+			isUnknown = true
 		}
+		s.output(workerID, msg, val, ok, isUnknown)
+	}
+}
+func (s *Server) output(workerID int, msg *types.Message, result string, ok, isUnknown bool) {
+	switch {
+	case !ok:
+		s.logger.Error("key not found", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()), zap.String("key", msg.Key))
+		return
+	case isUnknown:
+		s.logger.Error("unknown action", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()))
+	default:
+		log.Printf("worker id:%d performed action:%s key:%s value:%s\n", workerID, msg.Action.String(), msg.Key, result)
 	}
 }
