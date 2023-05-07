@@ -1,9 +1,10 @@
 ### ***SERVER-CLIQUE (server-client-queue)***
-* This repo containing code for a server and client that communicate via message queue.
-* Rabbit mq is used as message queue.
-* Client request server to AddItem(key, value), RemoveItem(key), GetItem(key), GetAllItems() via rabbitmq
+* This repo containing code for a server and clients that communicate via message queue.
 * Server has data structure that holds the data in the memory while keeping the order of items as they added.
-* Server reads the request events(client request) from rabbitmq and act accordingly.
+* Server reads the request events(client request) from message queue and act accordingly.
+* Client request server to AddItem(key, value), RemoveItem(key), GetItem(key), GetAllItems() via message queue. 
+* Clients can be added / removed while not interfering to the server or other clients.
+* `RabbitMQ` is used as a message queue.
 
 # Prerequisites
 - Go 1.19
@@ -13,7 +14,7 @@
 * Application can be build and started by using Makefile.
 * Make sure to cd to project folder.
 * Run the below commands in the terminal shell.
-* Make sure to run Pre-run and Go path is set properly
+* Make sure to run `Pre-run` and `Go path` is set properly.
 
 # Pre-run
     make mod
@@ -25,40 +26,40 @@
     make build
 
 # Setup
-* Client actions are configured via json file which is part of `server-clique/client/input.json`
+* Client actions are configured via json file which is part of `server-clique/client/input.json`.
 * Client can perform actions such as
   * AddItem(key, value)
   * RemoveItem(key)
   * GetItem(key) 
   * GetAllItems()
-* Each row in the json array represents action
-* Action require 3 values such as `action, key, value`
+* Each row in the json array represents action.
+* Action require 3 values such as `action, key, value`.
      ```json
      {"action": "add","key": "O","value": "o"},
      {"action": "getall"},
      {"action": "get","key": "O"},
      {"action": "remove","key": "O"},
      ```
-* Server outputs successful response to `server-clique/output.json` file
-* `make clean` can cleanup `output.json` file 
+* Server outputs successful response to `server-clique/output.json` file.
+* `make clean` can cleanup `output.json` file. 
 
 # How to run
 > There are 3 ways server,client & queue can be run.
 > Make sure to complete above Setup 
 
 > **Note:**
-> Make sure you have docker installed or Download and install rabbitmq installer
-> amd64(debian/x86-64) and arm64(osx M1/M2) has different docker run commands
+>* Make sure you have docker installed or Download and install rabbitmq installer.
+>* Creating docker image for both client and server has different docker run commands for different platforms amd64(debian/x86-64) & arm64(osx M1/M2).
 
 ## I.Start via main file
 ### Step:1 start rabbitmq
-`docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management`
+    docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 
 ### Step:2 start server
-`go run cmd/server/main.go`
+    go run -race cmd/server/main.go OR go run -race cmd/server/mem_optimised/main.go
 
 ### Step:3 start client
-`go run cmd/clien/main.go`
+    go run -race cmd/clien/main.go
 
 ## II.Start via locally build binary
 Run these commands in terminal shell
@@ -67,7 +68,7 @@ Run these commands in terminal shell
 * `make build`
 * `./server-clique-server`
 * `./server-clique-client`
-* `make clean` to cleanup locally built binary as well as output.json file
+* `make clean` to cleanup locally built binary as well as output.json file.
 
 ## III.Run as docker container
 ### Step:1
@@ -86,13 +87,14 @@ Run these commands in terminal shell
 ### Step:1
      make docker-run-rabbitmq
 ### Step:2
-    `go run cmd/server/main.go`
+    go run -race cmd/server/main.go OR go run -race cmd/server/mem_optimised/main.go
 ### Step:3
     sh client_loop.sh 
 
 >* Script to fire up messages from client.
->* This simple shell script starts client in loop and messages are feed from input.json
->* Multiple client simulation: Same script can be run as multiple client instance to increase the load 
+>* This simple shell script starts client in loop and messages are feed from input.json.
+>* Multiple client simulation: Same script can be run as multiple client instance to increase the load.
+>* Any client can be used But only requirement would be to follow the message type defined in `types` package `types.Message`.
 
 # Memory store benchmark
 * There are 2 memory store implementation available. 
@@ -122,5 +124,5 @@ ok      github.com/bhakiyakalimuthu/server-clique/server        7.730s
 2023/05/07 08:46:40.820164 worker id:3 performed action:add key:E value:e
 ```
 > ***Improvements***
->* Retry if rabbitmq abruptly close the connection
->* Quit server if rabbit mq connection is closed as there is no retry logic 
+>* Retry if rabbitMQ abruptly close the connection.
+>* Quit server if rabbitMQ connection is closed as there is no retry logic. 
