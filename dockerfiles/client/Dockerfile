@@ -8,7 +8,7 @@ RUN go mod download
 ADD . .
 
 RUN apk add --no-cache
-RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 go build -trimpath -ldflags "-s -X main._BuildVersion=${VERSION} -X main._AppName=${APP_NAME}" -v -o ${APP_NAME} ./cmd/client/main.go
+RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 go build -trimpath -ldflags "-s -X main.buildVersion=${VERSION} -X main.appName=${APP_NAME}" -v -o ${APP_NAME} ./cmd/client/main.go
 
 
 FROM alpine:latest

@@ -19,7 +19,7 @@ var (
 )
 
 func main() {
-	l := newLogger(buildVersion, appName)
+	l := newLogger(appName, buildVersion)
 	cfg := config.NewConfig()
 	q, err := queue.New(l, cfg.QueueConnString, cfg.QueueName, appName)
 	if err != nil {
@@ -37,7 +37,7 @@ func main() {
 	if err := client.Start(ctx); err != nil {
 		l.Fatal("failed to start client", zap.Error(err))
 	}
-	l.Warn("client sending data completed")
+	l.Info("client sending messages completed")
 }
 
 func newLogger(appName, version string) *zap.Logger {

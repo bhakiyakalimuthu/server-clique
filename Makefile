@@ -30,6 +30,8 @@ lint:
 gofumpt:
 	gofumpt -l -w -extra .
 
+
+# server
 docker-image-server:
 	DOCKER_BUILDKIT=1 docker build --platform linux/amd64 --progress=plain  --build-arg VERSION=${VERSION} -f dockerfiles/server/Dockerfile . -t ${APP_NAME}-server-${VERSION}:${VERSION}
 
@@ -39,6 +41,8 @@ osx-docker-image-server:
 docker-run-server:
 	docker run --network=host  ${APP_NAME}-server-${VERSION}
 
+
+# client
 docker-image-client:
 	DOCKER_BUILDKIT=1 docker build --platform linux/amd64 --progress=plain  --build-arg VERSION=${VERSION} -f dockerfiles/client/Dockerfile . -t ${APP_NAME}-client-${VERSION}:${VERSION}
 
@@ -48,11 +52,7 @@ osx-docker-image-client:
 docker-run-client:
 	docker run  --network=host  ${APP_NAME}-client-${VERSION}
 
+
+# queue
 docker-run-rabbitmq:
 	docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
-
-up:
-	docker-compose up -d
-
-down:
-	docker-compose down -v

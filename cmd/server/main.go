@@ -24,7 +24,7 @@ var (
 const workerPoolSize = 5
 
 func main() {
-	l := newLogger(buildVersion, appName)
+	l := newLogger(appName, buildVersion)
 	cfg := config.NewConfig()
 
 	// setup queue
@@ -45,7 +45,7 @@ func main() {
 	}
 
 	// file server for viewing output.json file, This is just a helper
-	fileServer := helper.NewFileServer(l, cfg.OutputFileName)
+	fileServer := helper.NewFileServer(l, cfg.OutputFileName, cfg.FileServerListenAddress)
 	go fileServer.Start()
 
 	server, err := server.New(l, f, q, s, cChan)
@@ -69,6 +69,7 @@ func main() {
 	for i := 0; i < workerPoolSize; i++ {
 		go server.Process(ctx, wg)
 	}
+
 	signal.Notify(shutdown, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	// handle shut down
 	<-shutdown

@@ -15,6 +15,8 @@ type Config struct {
 	// Queue name
 	QueueName      string `env:"QUEUE_NAME" envDefault:"rabbit-queue"`
 	OutputFileName string `env:"OUTPUT_FILE_NAME" envDefault:"output.json"`
+	// file server
+	FileServerListenAddress string `env:"FILESERVER_LISTEN_ADDRESS" envDefault:"localhost:8080"`
 }
 
 // LoadFromEnv parses environment variables into a given struct and validates

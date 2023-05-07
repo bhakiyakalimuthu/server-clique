@@ -48,7 +48,7 @@
 
 > **Note:**
 > Make sure you have docker installed or Download and install rabbitmq installer
-> amd64(debian) and arm64(osx) has different docker run commands
+> amd64(debian/x86-64) and arm64(osx M1/M2) has different docker run commands
 
 ## I.Start via main file
 ### Step:1 start rabbitmq

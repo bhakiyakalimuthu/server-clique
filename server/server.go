@@ -32,6 +32,7 @@ func New(logger *zap.Logger, writer io.Writer, queue queue.Queue, store Store, c
 }
 
 func (s *Server) Start(ctx context.Context) error {
+	s.logger.Info("Init server and waiting.......")
 	pChan, err := s.queue.Consume(ctx)
 	if err != nil {
 		s.logger.Error("failed to consume message", zap.Error(err))
@@ -62,6 +63,7 @@ func (s *Server) Process(ctx context.Context, wg *sync.WaitGroup) {
 	for msg := range s.cChan {
 		if msg == nil {
 			// handle edge case, when the connection is closed nil might get passed
+			s.logger.Debug("exiting Process as received nil msg value")
 			return
 		}
 		switch msg.Action {

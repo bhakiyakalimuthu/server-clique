@@ -9,25 +9,27 @@ import (
 )
 
 type FileServer struct {
-	logger   *zap.Logger
-	fileName string
-	server   *http.Server
+	logger      *zap.Logger
+	listenAddrs string
+	fileName    string
+	server      *http.Server
 }
 
-func NewFileServer(logger *zap.Logger, fileName string) *FileServer {
+func NewFileServer(logger *zap.Logger, fileName, listenAddrs string) *FileServer {
 	return &FileServer{
-		logger:   logger,
-		fileName: fileName,
+		logger:      logger,
+		fileName:    fileName,
+		listenAddrs: listenAddrs,
 	}
 }
 
 func (f *FileServer) Start() {
 	path := "./"
 	f.server = &http.Server{
-		Addr:    "localhost:8080",
+		Addr:    f.listenAddrs,
 		Handler: http.FileServer(http.Dir(path)),
 	}
-	f.logger.Info("Starting file server...", zap.String("listeningAddress", "localhost:8080"), zap.String("path", path))
+	f.logger.Info("Starting file server...,this is just helper to view output.json", zap.String("listeningAddress", f.listenAddrs), zap.String("path", path))
 	err := f.server.ListenAndServe()
 
 	if errors.Is(err, http.ErrServerClosed) {
