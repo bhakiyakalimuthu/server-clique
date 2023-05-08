@@ -95,6 +95,7 @@ func (s *Server) output(workerID int, msg *types.Message, result string, ok, isU
 		return
 	case isUnknown:
 		s.logger.Error("unknown action", zap.Int("workerID", workerID), zap.String("action", msg.Action.String()))
+		return
 	default:
 		log.Printf("worker id:%d performed action:%s key:%s value:%s\n", workerID, msg.Action.String(), msg.Key, result)
 	}
