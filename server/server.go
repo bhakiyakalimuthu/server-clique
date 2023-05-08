@@ -20,7 +20,7 @@ type Server struct {
 	cChan  chan *types.Message // consumer channel
 }
 
-func New(logger *zap.Logger, writer io.Writer, queue queue.Queue, store Store, cChan chan *types.Message) (*Server, error) {
+func New(logger *zap.Logger, writer io.Writer, queue queue.Queue, store Store, cChan chan *types.Message) *Server {
 	log.SetOutput(writer)
 	log.SetFlags(log.LstdFlags | log.LUTC | log.Lmicroseconds)
 	return &Server{
@@ -28,7 +28,7 @@ func New(logger *zap.Logger, writer io.Writer, queue queue.Queue, store Store, c
 		queue:  queue,
 		store:  store,
 		cChan:  cChan,
-	}, nil
+	}
 }
 
 func (s *Server) Start(ctx context.Context) error {

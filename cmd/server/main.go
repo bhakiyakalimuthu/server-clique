@@ -48,10 +48,7 @@ func main() {
 	fileServer := helper.NewFileServer(l, cfg.OutputFileName, cfg.FileServerListenAddress)
 	go fileServer.Start()
 
-	server, err := server.New(l, f, q, s, cChan)
-	if err != nil {
-		l.Fatal("failed to start server", zap.Error(err))
-	}
+	server := server.New(l, f, q, s, cChan)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := new(sync.WaitGroup)

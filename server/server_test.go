@@ -23,10 +23,7 @@ func TestServer_Process(t *testing.T) {
 	w := io.Discard
 	cChan := make(chan *types.Message, 1)
 
-	server, err := New(l, w, nil, s, cChan)
-	if err != nil {
-		t.Fatal("failed to start server", zap.Error(err))
-	}
+	server := New(l, w, nil, s, cChan)
 
 	wg.Add(1)
 	go func() {
@@ -66,10 +63,7 @@ func BenchmarkServer_Memstore(b *testing.B) {
 	store := NewMemStore(l)
 	cChan := make(chan *types.Message)
 
-	server, err := New(l, writer, nil, store, cChan)
-	if err != nil {
-		b.Fatalf("Failed to create server: %v", err)
-	}
+	server := New(l, writer, nil, store, cChan)
 
 	ctx := context.Background()
 	var wg sync.WaitGroup
@@ -95,10 +89,7 @@ func BenchmarkServer_MemstoreOptimised(b *testing.B) {
 	store := NewMemStoreOptimised(l)
 	cChan := make(chan *types.Message)
 
-	server, err := New(l, writer, nil, store, cChan)
-	if err != nil {
-		b.Fatalf("Failed to create server: %v", err)
-	}
+	server := New(l, writer, nil, store, cChan)
 
 	ctx := context.Background()
 	var wg sync.WaitGroup
