@@ -92,9 +92,10 @@ func (q *queue) Consume(ctx context.Context) (<-chan *types.Message, error) {
 				// make sure that none of the msg get into msgChan  after context gets cancelled
 				case <-ctx.Done():
 					return
+				case msgChan <- m: // send in messages
 				default:
 				}
-				msgChan <- m // send in messages
+
 			case <-ctx.Done():
 				return
 			}

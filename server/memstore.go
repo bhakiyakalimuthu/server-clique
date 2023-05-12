@@ -31,13 +31,13 @@ func NewMemStore(logger *zap.Logger) *MemStore {
 }
 
 func (m *MemStore) Add(ctx context.Context, key, value string, timestamp time.Time) {
-	defer m.mu.Unlock()
 	m.mu.Lock()
 	m.cache[key] = item{
 		key:       key,
 		value:     value,
 		timestamp: timestamp.UnixNano(),
 	}
+	m.mu.Unlock()
 }
 
 func (m *MemStore) Remove(ctx context.Context, key string) bool {

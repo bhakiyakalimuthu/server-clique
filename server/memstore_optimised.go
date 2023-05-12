@@ -59,8 +59,8 @@ func (m *MemStoreOptimised) Remove(ctx context.Context, key string) bool {
 }
 
 func (m *MemStoreOptimised) Get(ctx context.Context, key string) (string, bool) {
-	defer m.mu.RUnlock()
 	m.mu.RLock()
+	defer m.mu.RUnlock()
 	index, ok := m.cache[key]
 	if ok {
 		return m.items[index].value, ok

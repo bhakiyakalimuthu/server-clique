@@ -49,9 +49,10 @@ func (s *Server) Start(ctx context.Context) error {
 			select {
 			case <-ctx.Done():
 				return nil
+			case s.cChan <- msg:
 			default:
 			}
-			s.cChan <- msg
+
 		case <-ctx.Done():
 			return nil
 		}
