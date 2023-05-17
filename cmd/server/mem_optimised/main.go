@@ -24,9 +24,9 @@ var (
 const workerPoolSize = 5
 
 func main() {
-	l := newLogger(appName, buildVersion)
 	cfg := config.NewConfig()
 
+	l := newLogger(appName, buildVersion, cfg.DebugLog)
 	// setup queue
 	q, err := queue.New(l, cfg.QueueConnString, cfg.QueueName, appName)
 	if err != nil {
@@ -79,8 +79,11 @@ func main() {
 	wg.Wait()
 }
 
-func newLogger(appName, version string) *zap.Logger {
-	logLevel := zap.DebugLevel
+func newLogger(appName, version string, isDebugLvlSet bool) *zap.Logger {
+	logLevel := zap.InfoLevel
+	if isDebugLvlSet {
+		logLevel = zap.DebugLevel
+	}
 	var zapCore zapcore.Core
 	level := zap.NewAtomicLevel()
 	level.SetLevel(logLevel)
